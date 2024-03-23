@@ -1,7 +1,8 @@
 using WizardAPI.Entities;
-using WizardAPI.Entities.DTOs;
+using WizardAPI.Entities.DTOs.Create;
+using WizardAPI.Entities.DTOs.Edit;
+using WizardAPI.Entities.DTOs.View;
 using WizardAPI.Entities.Extensions;
-using WizardAPI.Repositories.Interfaces;
 using WizardAPI.Repositories.WizardRepositoriesImpl;
 using WizardAPI.UseCase.WizardUseCasesImpl;
 
@@ -9,36 +10,34 @@ namespace WizardAPI.UseCase.TeacherUseCases;
 
 public class TeacherUseCase(WizardRepositoryImpl<Teacher> teacherClassRepository) : WizardUseCaseImpl<Teacher>(teacherClassRepository)
 {
-    public async Task CreateTeacherAsync(TeacherDto teacherDto)
+    public async Task CreateTeacherAsync(TeacherCreateDto teacherCreateDto)
     {
         Teacher newTeacher = new()
         {
-            Name = teacherDto.Name,
-            Birthday = teacherDto.Birthday
+            Name = teacherCreateDto.Name,
+            Birthday = teacherCreateDto.Birthday
         };
 
         await teacherClassRepository.CreateAsync(newTeacher);
     }
 
-    public async Task<ICollection<TeacherDto>> GetAllTeachersAsync()
+    public async Task<ICollection<TeacherViewDto>> GetAllTeachersAsync()
     {
-        return (await teacherClassRepository.GetAllAsync()).Select(t => t.AsDto()).ToList();
+        return (await teacherClassRepository.GetAllAsync()).Select(t => t.AsViewDto()).ToList();
     }
 
-    public async Task<TeacherDto> GetTeacherAsync(int id)
+    public async Task<TeacherViewDto> GetTeacherAsync(int id)
     {
-        return (await teacherClassRepository.GetAsync(id) ?? throw new NullReferenceException()).AsDto();
+        return (await teacherClassRepository.GetAsync(id) ?? throw new NullReferenceException()).AsViewDto();
     }
 
-    public async Task UpdateTeacherAsync(int id, TeacherDto teacherDto)
+    public async Task UpdateTeacherAsync(int id, TeacherEditDto teacherEditDto)
     {
-        var toUpdate = await teacherClassRepository.GetAsync(id);
-        if (toUpdate != null)
-        {
-            toUpdate.Name = teacherDto.Name;
-            toUpdate.Birthday = teacherDto.Birthday;
-        }
-
-        if (toUpdate != null) await teacherClassRepository.UpdateAsync(toUpdate);
+        var toUpdate = await teacherClassRepository.GetAsync(id) ?? throw new NullReferenceException();
+        
+        toUpdate.Name = teacherEditDto.Name ?? toUpdate.Name;
+        toUpdate.Birthday = teacherEditDto.Birthday ?? toUpdate.Birthday;
+        
+        await teacherClassRepository.UpdateAsync(toUpdate);
     }
 }

@@ -9,7 +9,7 @@ public class WizardContext(DbContextOptions<WizardContext> options) : DbContext(
     public DbSet<Teacher> Teachers => Set<Teacher>();
     public DbSet<InteractiveGroup> InteractiveGroups => Set<InteractiveGroup>();
     public DbSet<Student> Students => Set<Student>();
-    public DbSet<WizardClass> WizardClasses => Set<WizardClass>();
+    public DbSet<InteractiveClass> WizardClasses => Set<InteractiveClass>();
     public DbSet<Book> Books => Set<Book>();
     
     protected override void OnModelCreating(ModelBuilder builder)

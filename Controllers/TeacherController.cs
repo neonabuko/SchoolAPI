@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using WizardAPI.Entities.DTOs;
+using WizardAPI.Entities.DTOs.Create;
+using WizardAPI.Entities.DTOs.Edit;
+using WizardAPI.Entities.DTOs.View;
 using WizardAPI.UseCase.TeacherUseCases;
 
 namespace WizardAPI.Controllers;
@@ -9,24 +11,24 @@ public class TeacherController(TeacherUseCase teacherUseCase) : ControllerBase
 {
     [HttpGet]
     [Route("/teachers")]
-    public async Task<ICollection<TeacherDto>> Index()
+    public async Task<ICollection<TeacherViewDto>> Index()
     {
         return await teacherUseCase.GetAllTeachersAsync();
     }
 
     [HttpPost]
     [Route("/teachers")]
-    public async Task<IActionResult> Add(TeacherDto teacherDto)
+    public async Task<IActionResult> Add(TeacherCreateDto teacherCreateDto)
     {
-        await teacherUseCase.CreateTeacherAsync(teacherDto);
+        await teacherUseCase.CreateTeacherAsync(teacherCreateDto);
         return Ok();
     }
 
     [HttpPut]
     [Route("/teachers/{id:int}")]
-    public async Task<IActionResult> Edit(int id, TeacherDto teacherDto)
+    public async Task<IActionResult> Edit(int id, TeacherEditDto teacherEditDto)
     {
-        await teacherUseCase.UpdateTeacherAsync(id, teacherDto);
+        await teacherUseCase.UpdateTeacherAsync(id, teacherEditDto);
         return Ok();
     }
     

@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using WizardAPI.Entities.DTOs;
+using WizardAPI.Entities.DTOs.Create;
+using WizardAPI.Entities.DTOs.Edit;
+using WizardAPI.Entities.DTOs.View;
 using WizardAPI.UseCase.StudentUseCases;
 
 namespace WizardAPI.Controllers;
@@ -9,15 +11,43 @@ public class StudentController(StudentUseCase useCase) : ControllerBase
 {
     [HttpGet]
     [Route("/students")]
-    public async Task<ICollection<StudentOutDto>> Index()
+    public async Task<ICollection<StudentViewDto>> Index()
     {
         return await useCase.GetAllStudentsAsync();
     }
 
+    [HttpGet]
+    [Route("/students/{id:int}")]
+    public async Task<StudentViewDto> GetAsync(int id)
+    {
+        return await useCase.GetStudentAsync(id);
+    }
+
+    [HttpGet]
+    [Route("/students/interactive-groups/{interactiveGroupId:int}")]
+    public async Task<ICollection<StudentViewDto>> GetStudentsByInteractiveGroupId(int interactiveGroupId)
+    {
+        return await useCase.GetStudentsByInteractiveGroupIdAsync(interactiveGroupId);
+    }
+
     [HttpPost]
     [Route("/students")]
-    public async Task Add(StudentDto studentDto)
+    public async Task AddAsync(StudentCreateDto studentCreateDto)
     {
-        await useCase.CreateStudentAsync(studentDto);
+        await useCase.CreateStudentAsync(studentCreateDto);
+    }
+
+    [HttpPut]
+    [Route("/students/{id:int}")]
+    public async Task EditAsync(int id, StudentEditDto studentEditDto)
+    {
+        await useCase.UpdateStudentAsync(id, studentEditDto);
+    }
+
+    [HttpDelete]
+    [Route("/students/{id:int}")]
+    public async Task DeleteAsync(int id)
+    {
+        await useCase.DeleteAsync(id);
     }
 }

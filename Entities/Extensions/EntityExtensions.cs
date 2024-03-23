@@ -1,77 +1,63 @@
-using WizardAPI.Entities.DTOs;
+using WizardAPI.Entities.DTOs.View;
 using WizardAPI.Entities.Enums;
 
 namespace WizardAPI.Entities.Extensions;
 
 public static class EntityExtensions
 {
-    public static TeacherDto AsDto(this Teacher teacher)
+    public static TeacherViewDto AsViewDto(this Teacher teacher)
     {
-        return new TeacherDto(
+        var birthday = teacher.Birthday;
+        var formattedBirthday = birthday.ToString("dd/MM/yyyy");
+        return new TeacherViewDto(
+            teacher.Id,
             teacher.Name,
-            teacher.Birthday
+            formattedBirthday
             );
     }
 
-    public static WizardClassDto AsDto(this WizardClass wizardClass)
+    public static InteractiveClassViewDto AsViewDto(this InteractiveClass interactiveClass)
     {
-        var dateTime = wizardClass.DateTime;
-        var formattedDateTime = dateTime.ToString("dd/MM HH:mm");
+        var formattedDateTime = interactiveClass.DateTime.ToString("dd/MM HH:mm");
+
+        var oralGradeInt = interactiveClass.Oral ?? 4;
+        var oralGrade = Enum.GetName(typeof(Grades), (Grades)oralGradeInt);
+
+        var hwGradeInt = interactiveClass.HwGrade ?? 4;
+        var hwGrade = Enum.GetName(typeof(Grades), (Grades)hwGradeInt);
         
-        return new WizardClassDto(
-            wizardClass.Id,
-            wizardClass.Lesson,
+        return new InteractiveClassViewDto(
+            interactiveClass.Id,
+            interactiveClass.Lesson,
             formattedDateTime,
-            wizardClass.TeacherId,
-            wizardClass.Oral,
-            wizardClass.HwDelivered,
-            wizardClass.HwGrade,
-            wizardClass.StudentPresent
+            oralGrade,
+            interactiveClass.HwDelivered,
+            hwGrade,
+            interactiveClass.StudentPresent,
+            interactiveClass.StudentId
         );
     }
 
-    public static WizardClassOutDto AsOutDto(this WizardClass wizardClass)
+    public static InteractiveGroupViewDto AsViewDto(this InteractiveGroup interactiveGroup)
     {
-        // Parse DateTime obj into string
-        var dateTime = wizardClass.DateTime;
-        var formattedDateTime = dateTime.ToString("dd/MM HH:mm");
-        
-        // Parse Oral into Grade enum
-        var oral = Enum.GetName(typeof(Grades), (Grades)wizardClass.Oral);
-        
-        // Parse HwGrade into Grade enum
-        var hwGrade = Enum.GetName(typeof(Grades), (Grades)wizardClass.HwGrade);
-        
-        return new WizardClassOutDto(
-            wizardClass.Lesson,
-            formattedDateTime,
-            oral ?? throw new NullReferenceException(),
-            wizardClass.HwDelivered,
-            hwGrade ?? throw new NullReferenceException(),
-            wizardClass.StudentPresent
-        );
-    }
-
-    public static GroupOutDto AsOutDto(this InteractiveGroup interactiveGroup)
-    {
-        var dateTime = interactiveGroup.DateTime;
-        var formattedDateTime = dateTime.ToString("dd/MM HH:mm");
-        var studentsAsOutDto = interactiveGroup.Students.Select(student => student.AsOutDto()).ToList();
-        return new GroupOutDto(
-            interactiveGroup.Teacher.Name,
-            formattedDateTime,
-            studentsAsOutDto
+        return new InteractiveGroupViewDto(
+            interactiveGroup.Id,
+            interactiveGroup.Name,
+            interactiveGroup.DaysOfTheWeek,
+            interactiveGroup.Time.ToString("HH:mm"),
+            interactiveGroup.TeacherId
         );
     }
     
-    public static StudentOutDto AsOutDto(this Student student)
+    public static StudentViewDto AsViewDto(this Student student)
     {
-        if (student.InteractiveGroup == null) throw new NullReferenceException();
-        var wizardClassesAsOutDto = (student.WizardClasses ?? throw new InvalidOperationException())
-            .Select(classes => classes.AsOutDto()).ToList();
-        return new StudentOutDto(
+        var birthday = student.Birthday;
+        var formattedBirthday = birthday.ToString("dd/MM/yyyy");
+        return new StudentViewDto(
+            student.Id,
             student.Name,
-            wizardClassesAsOutDto
+            formattedBirthday,
+            student.InteractiveGroupId
         );
     }
 }

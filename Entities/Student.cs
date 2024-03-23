@@ -8,7 +8,8 @@ public class Student
     [StringLength(50)]
     public required string Name { get; set; }
     public required DateOnly Birthday { get; set; }
-    
+
+    public int? InteractiveGroupId { get; set; }
     public InteractiveGroup? InteractiveGroup { get; set; }
-    public ICollection<WizardClass>? WizardClasses { get; set; }
+    public ICollection<InteractiveClass>? InteractiveClasses { get; set; }
 }

@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using WizardAPI.Data;
 using WizardAPI.Entities;
 using WizardAPI.Repositories.WizardRepositoriesImpl;

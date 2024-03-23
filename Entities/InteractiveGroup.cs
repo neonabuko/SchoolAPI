@@ -1,9 +1,16 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace WizardAPI.Entities;
 
 public class InteractiveGroup
 {
     public int Id { get; set; }
-    public DateTime DateTime { get; set; }
-    public required Teacher Teacher { get; set; }
-    public required ICollection<Student> Students { get; set; }
+    [StringLength(50)]
+    public string Name { get; set; }
+    public string DaysOfTheWeek { get; set; }
+    public TimeOnly Time { get; set; }
+    
+    public int? TeacherId { get; set; }
+    public Teacher? Teacher { get; set; }
+    public ICollection<Student>? Students { get; set; }
 }
