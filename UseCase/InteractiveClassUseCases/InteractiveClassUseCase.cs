@@ -23,6 +23,11 @@ public class InteractiveClassUseCase(WizardRepositoryImpl<InteractiveClass> inte
         {
             Lesson = interactiveClassCreateDto.Lesson,
             DateTime = dateTime,
+            Oral = interactiveClassCreateDto.Oral,
+            HwDelivered = bool.Parse(interactiveClassCreateDto.HwDelivered ?? "0"),
+            HwGrade = interactiveClassCreateDto.HwGrade,
+            StudentPresent = bool.Parse(interactiveClassCreateDto.StudentPresent ?? "0"),
+            StudentId = interactiveClassCreateDto.StudentId
         };
 
         await interactiveClassRepository.CreateAsync(newInteractiveClass);

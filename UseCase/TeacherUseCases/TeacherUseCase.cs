@@ -1,3 +1,4 @@
+using System.Globalization;
 using WizardAPI.Entities;
 using WizardAPI.Entities.DTOs.Create;
 using WizardAPI.Entities.DTOs.Edit;
@@ -12,10 +13,14 @@ public class TeacherUseCase(WizardRepositoryImpl<Teacher> teacherClassRepository
 {
     public async Task CreateTeacherAsync(TeacherCreateDto teacherCreateDto)
     {
+        var stringBirthday = teacherCreateDto.Birthday;
+        var dateTimeBirthday = DateTime.ParseExact(stringBirthday, "dd/MM/yyyy", CultureInfo.InvariantCulture);
+        var dateOnlyBirthday = new DateOnly(dateTimeBirthday.Year, dateTimeBirthday.Month, dateTimeBirthday.Day);
+        
         Teacher newTeacher = new()
         {
             Name = teacherCreateDto.Name,
-            Birthday = teacherCreateDto.Birthday
+            Birthday = dateOnlyBirthday
         };
 
         await teacherClassRepository.CreateAsync(newTeacher);

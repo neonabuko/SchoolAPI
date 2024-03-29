@@ -29,6 +29,13 @@ public class StudentController(StudentUseCase useCase) : ControllerBase
     {
         return await useCase.GetStudentsByInteractiveGroupIdAsync(interactiveGroupId);
     }
+    
+    [HttpGet]
+    [Route("/students/by-name/{name}")]
+    public async Task<ICollection<StudentViewDto>> QueryStudentsByNameAsync(string name)
+    {
+        return await useCase.QueryStudentsByName(name);
+    }
 
     [HttpPost]
     [Route("/students")]

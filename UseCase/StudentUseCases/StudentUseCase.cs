@@ -1,3 +1,4 @@
+using System.Globalization;
 using WizardAPI.Entities;
 using WizardAPI.Entities.DTOs.Create;
 using WizardAPI.Entities.DTOs.Edit;
@@ -8,14 +9,18 @@ using WizardAPI.UseCase.WizardUseCasesImpl;
 
 namespace WizardAPI.UseCase.StudentUseCases;
 
-public class StudentUseCase(WizardRepositoryImpl<Student> studentRepository) : WizardUseCaseImpl<Student>(studentRepository)
+public class StudentUseCase(WizardRepositoryImpl<Student> studentRepository)
+    : WizardUseCaseImpl<Student>(studentRepository)
 {
     public async Task CreateStudentAsync(StudentCreateDto studentCreateDto)
     {
+        var stringBirthday = studentCreateDto.Birthday;
+        var dateTimeBirthday = DateTime.ParseExact(stringBirthday, "dd/MM/yyyy", CultureInfo.InvariantCulture);
+        var dateOnlyBirthday = new DateOnly(dateTimeBirthday.Year, dateTimeBirthday.Month, dateTimeBirthday.Day);
         Student newStudent = new()
         {
             Name = studentCreateDto.Name,
-            Birthday = studentCreateDto.Birthday
+            Birthday = dateOnlyBirthday
         };
 
         await studentRepository.CreateAsync(newStudent);
@@ -24,6 +29,15 @@ public class StudentUseCase(WizardRepositoryImpl<Student> studentRepository) : W
     public async Task<ICollection<StudentViewDto>> GetAllStudentsAsync()
     {
         return (await studentRepository.GetAllAsync()).Select(s => s.AsViewDto()).ToList();
+    }
+
+    public Task<ICollection<StudentViewDto>> QueryStudentsByName(string name)
+    {
+        return Task.FromResult<ICollection<StudentViewDto>>(
+            studentRepository.GetAllAsync().Result.Where(
+                    s => s.Name.Contains(name, StringComparison.CurrentCultureIgnoreCase))
+                .Select(s => s.AsViewDto())
+                .ToList());
     }
 
     public async Task<StudentViewDto> GetStudentAsync(int id)

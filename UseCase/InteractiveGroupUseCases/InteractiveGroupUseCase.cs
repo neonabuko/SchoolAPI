@@ -1,3 +1,4 @@
+using System.Globalization;
 using WizardAPI.Entities;
 using WizardAPI.Entities.DTOs.Create;
 using WizardAPI.Entities.DTOs.Edit;
@@ -12,11 +13,19 @@ public class InteractiveGroupUseCase(WizardRepositoryImpl<InteractiveGroup> inte
 {
     public async Task CreateInteractiveGroupAsync(InteractiveGroupCreateDto interactiveGroupCreateDto)
     {
+        var time = interactiveGroupCreateDto.Time;
+        var timeOnly = new TimeOnly();
+        if (DateTime.TryParseExact(time, "HH:mm", null, DateTimeStyles.None, out var dateTime))
+        {
+            var timeSpan = dateTime.TimeOfDay;
+            timeOnly = TimeOnly.FromTimeSpan(timeSpan);
+        }
+
         InteractiveGroup newInteractiveGroup = new()
         {
             Name = interactiveGroupCreateDto.Name,
             DaysOfTheWeek = interactiveGroupCreateDto.DaysOfTheWeek,
-            Time = interactiveGroupCreateDto.Time
+            Time = timeOnly
         };
 
         await interactiveGroupRepository.CreateAsync(newInteractiveGroup);
