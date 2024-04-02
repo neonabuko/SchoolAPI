@@ -39,9 +39,9 @@ public class StudentController(StudentUseCase useCase) : ControllerBase
 
     [HttpPost]
     [Route("/students")]
-    public async Task AddAsync(StudentCreateDto studentCreateDto)
+    public async Task<StudentViewDto> AddAsync(StudentCreateDto studentCreateDto)
     {
-        await useCase.CreateStudentAsync(studentCreateDto);
+        return await useCase.CreateStudentAsync(studentCreateDto);
     }
 
     [HttpPut]

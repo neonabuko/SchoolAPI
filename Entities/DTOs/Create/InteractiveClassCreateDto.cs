@@ -1,11 +1,13 @@
+using WizardAPI.Entities.Enums;
+
 namespace WizardAPI.Entities.DTOs.Create;
 
 public record InteractiveClassCreateDto(
     string Lesson,
     string DateTime,
-    int? Oral,
+    string? Oral,
     string? HwDelivered,
-    int? HwGrade,
+    string? HwGrade,
     string? StudentPresent,
     int? StudentId
     );

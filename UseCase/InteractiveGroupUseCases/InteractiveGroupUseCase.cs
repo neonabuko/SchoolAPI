@@ -43,6 +43,15 @@ public class InteractiveGroupUseCase(WizardRepositoryImpl<InteractiveGroup> inte
             ).AsViewDto());
     }
 
+    public Task<ICollection<InteractiveGroupViewDto>> QueryInteractiveGroupsByName(string name)
+    {
+        return Task.FromResult<ICollection<InteractiveGroupViewDto>>(
+            interactiveGroupRepository.GetAllAsync().Result.Where(
+                    s => s.Name.StartsWith(name, StringComparison.CurrentCultureIgnoreCase))
+                .Select(s => s.AsViewDto())
+                .ToList());
+    }
+    
     public async Task UpdateInteractiveGroupAsync(int id, InteractiveGroupEditDto dto)
     {
         var groupToUpdate = await interactiveGroupRepository.GetAsync(id) 

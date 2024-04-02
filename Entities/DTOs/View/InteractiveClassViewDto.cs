@@ -1,12 +1,12 @@
 namespace WizardAPI.Entities.DTOs.View;
 
 public record InteractiveClassViewDto(
-    int Id,
+    string Id,
     string Lesson,
     string DateTime,
     string? Oral,
-    bool? HwDelivered,
+    string? HwDelivered,
     string? HwGrade,
-    bool? StudentPresent,
-    int? StudentId
+    string? StudentPresent,
+    string? StudentId
     );

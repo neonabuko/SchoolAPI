@@ -24,6 +24,13 @@ public class InteractiveGroupController(InteractiveGroupUseCase groupUseCase, St
         return await groupUseCase.GetInteractiveGroupAsync(id);
     }
 
+    [HttpGet]
+    [Route("/interactive-groups/by-name/{name}")]
+    public async Task<ICollection<InteractiveGroupViewDto>> QueryInteractiveGroupsByName(string name)
+    {
+        return await groupUseCase.QueryInteractiveGroupsByName(name);
+    }
+    
     [HttpPost]
     [Route("/interactive-groups")]
     public async Task<IActionResult> AddAsync(InteractiveGroupCreateDto interactiveGroupCreateDto)

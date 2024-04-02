@@ -1,0 +1,5 @@
+WizardAPI.code-workspace
+bin
+Data/Migrations
+.vscode
+obj

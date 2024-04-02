@@ -1,5 +1,4 @@
 using WizardAPI.Entities.DTOs.View;
-using WizardAPI.Entities.Enums;
 
 namespace WizardAPI.Entities.Extensions;
 
@@ -19,22 +18,16 @@ public static class EntityExtensions
     public static InteractiveClassViewDto AsViewDto(this InteractiveClass interactiveClass)
     {
         var formattedDateTime = interactiveClass.DateTime.ToString("dd/MM HH:mm");
-
-        var oralGradeInt = interactiveClass.Oral ?? 4;
-        var oralGrade = Enum.GetName(typeof(Grades), (Grades)oralGradeInt);
-
-        var hwGradeInt = interactiveClass.HwGrade ?? 4;
-        var hwGrade = Enum.GetName(typeof(Grades), (Grades)hwGradeInt);
         
         return new InteractiveClassViewDto(
-            interactiveClass.Id,
+            interactiveClass.Id.ToString(),
             interactiveClass.Lesson,
             formattedDateTime,
-            oralGrade,
-            interactiveClass.HwDelivered,
-            hwGrade,
-            interactiveClass.StudentPresent,
-            interactiveClass.StudentId
+            interactiveClass.Oral.ToString()?.ToUpper(),
+            interactiveClass.HwDelivered.ToString(),
+            interactiveClass.HwGrade.ToString()?.ToUpper(),
+            interactiveClass.StudentPresent.ToString(),
+            interactiveClass.StudentId.ToString()
         );
     }
 
@@ -54,10 +47,10 @@ public static class EntityExtensions
         var birthday = student.Birthday;
         var formattedBirthday = birthday.ToString("dd/MM/yyyy");
         return new StudentViewDto(
-            student.Id,
+            student.Id.ToString(),
             student.Name,
             formattedBirthday,
-            student.InteractiveGroupId
+            student.InteractiveGroupId.ToString()
         );
     }
 }

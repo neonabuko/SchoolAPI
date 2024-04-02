@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using WizardAPI.Entities.Enums;
 
 namespace WizardAPI.Entities;
 
@@ -9,9 +10,9 @@ public class InteractiveClass
     public required string Lesson { get; set; }
     public required DateTime DateTime { get; set; }
     
-    public int? Oral { get; set; }
+    public Grades? Oral { get; set; }
     public bool? HwDelivered { get; set; }
-    public int? HwGrade { get; set; }
+    public Grades? HwGrade { get; set; }
     public bool? StudentPresent { get; set; }
     
     public int? StudentId { get; set; }

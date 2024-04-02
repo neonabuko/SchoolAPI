@@ -12,18 +12,21 @@ namespace WizardAPI.UseCase.StudentUseCases;
 public class StudentUseCase(WizardRepositoryImpl<Student> studentRepository)
     : WizardUseCaseImpl<Student>(studentRepository)
 {
-    public async Task CreateStudentAsync(StudentCreateDto studentCreateDto)
+    public async Task<StudentViewDto> CreateStudentAsync(StudentCreateDto studentCreateDto)
     {
-        var stringBirthday = studentCreateDto.Birthday;
+        var stringBirthday = studentCreateDto.Birthday ?? "01/01/2001";
         var dateTimeBirthday = DateTime.ParseExact(stringBirthday, "dd/MM/yyyy", CultureInfo.InvariantCulture);
         var dateOnlyBirthday = new DateOnly(dateTimeBirthday.Year, dateTimeBirthday.Month, dateTimeBirthday.Day);
+
         Student newStudent = new()
         {
             Name = studentCreateDto.Name,
-            Birthday = dateOnlyBirthday
+            Birthday = dateOnlyBirthday,
+            InteractiveGroupId = studentCreateDto.InteractiveGroupId
         };
 
         await studentRepository.CreateAsync(newStudent);
+        return newStudent.AsViewDto();
     }
 
     public async Task<ICollection<StudentViewDto>> GetAllStudentsAsync()
@@ -35,7 +38,7 @@ public class StudentUseCase(WizardRepositoryImpl<Student> studentRepository)
     {
         return Task.FromResult<ICollection<StudentViewDto>>(
             studentRepository.GetAllAsync().Result.Where(
-                    s => s.Name.Contains(name, StringComparison.CurrentCultureIgnoreCase))
+                    s => s.Name.StartsWith(name, StringComparison.CurrentCultureIgnoreCase))
                 .Select(s => s.AsViewDto())
                 .ToList());
     }
