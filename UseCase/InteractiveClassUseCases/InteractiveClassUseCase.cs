@@ -14,8 +14,18 @@ public class InteractiveClassUseCase(
     WizardRepositoryImpl<InteractiveClass> interactiveClassRepository,
     WizardRepositoryImpl<Student> studentRepository) : WizardUseCaseImpl<InteractiveClass>(interactiveClassRepository)
 {
-    public async Task CreateInteractiveClassAsync(InteractiveClassCreateDto interactiveClassCreateDto)
+    public async Task<InteractiveClassViewDto> CreateInteractiveClassAsync(InteractiveClassCreateDto interactiveClassCreateDto)
     {
+        if (interactiveClassCreateDto.StudentId != null) {
+            if (
+                 GetInteractiveClassesByStudentIdAsync((int)interactiveClassCreateDto.StudentId)
+                .Result
+                .Where(c => c.Lesson == interactiveClassCreateDto.Lesson)
+                .ToList()
+                .Count > 0
+            ) throw new DbNameConflictException("Student already has a lesson with name '" + interactiveClassCreateDto.Lesson + "'");
+        }
+
         DateTime.TryParseExact(
             interactiveClassCreateDto.DateTime,
             "dd/MM HH:mm",
@@ -39,6 +49,7 @@ public class InteractiveClassUseCase(
         };
 
         await interactiveClassRepository.CreateAsync(newInteractiveClass);
+        return newInteractiveClass.AsViewDto();
     }
 
     public async Task<ICollection<InteractiveClassViewDto>> GetAllInteractiveClassesAsync()
@@ -46,20 +57,22 @@ public class InteractiveClassUseCase(
         return (await interactiveClassRepository.GetAllAsync()).Select(i => i.AsViewDto()).ToList();
     }
 
-    public Task<ICollection<InteractiveClassViewDto>> GetInteractiveClassesByStudentIdAsync(int studentId)
+    public async Task<ICollection<InteractiveClassViewDto>> GetInteractiveClassesByStudentIdAsync(int studentId)
     {
-        return Task.FromResult<ICollection<InteractiveClassViewDto>>(interactiveClassRepository.GetAllAsync().Result
+        var interactiveClasses = await interactiveClassRepository.GetAllAsync();
+        return interactiveClasses
             .Where(i => i.StudentId == studentId)
-            .Select(i => i.AsViewDto()).ToList());
+            .Select(i => i.AsViewDto())
+            .ToList();
     }
 
-    public Task<InteractiveClassViewDto> GetFirstInteractiveClassScheduledForTodayByStudentIdAsync(int studentId)
+    public async Task<InteractiveClassViewDto> GetFirstInteractiveClassScheduledForTodayByStudentIdAsync(int studentId)
     {
-        return Task.FromResult<InteractiveClassViewDto>(
-            interactiveClassRepository.GetAllAsync().Result
+        var interactiveClasses = await interactiveClassRepository.GetAllAsync();
+            return interactiveClasses
                 .Where(i => i.StudentId == studentId)
-                .Where(i => i.DateTime.Day == DateTime.Now.Day
-                ).Select(i => i.AsViewDto()).ToList().First());
+                .Where(i => i.DateTime.Day == DateTime.Now.Day)
+                .Select(i => i.AsViewDto()).ToList().First();
     }
 
     public Task<ICollection<StudentViewDto>> GetStudentsThatHaveClassTodayByGroupId(int groupId)

@@ -9,7 +9,7 @@ public static class EntityExtensions
         var birthday = teacher.Birthday;
         var formattedBirthday = birthday.ToString("dd/MM/yyyy");
         return new TeacherViewDto(
-            teacher.Id,
+            teacher.Id.ToString(),
             teacher.Name,
             formattedBirthday
             );
@@ -33,12 +33,12 @@ public static class EntityExtensions
 
     public static InteractiveGroupViewDto AsViewDto(this InteractiveGroup interactiveGroup)
     {
+        var formattedDateTime = interactiveGroup.DateTime.ToString("dd/MM HH:mm");
         return new InteractiveGroupViewDto(
-            interactiveGroup.Id,
+            interactiveGroup.Id.ToString(),
             interactiveGroup.Name,
-            interactiveGroup.DaysOfTheWeek,
-            interactiveGroup.Time.ToString("HH:mm"),
-            interactiveGroup.TeacherId
+            formattedDateTime,
+            interactiveGroup.TeacherId.ToString()
         );
     }
     
@@ -50,6 +50,7 @@ public static class EntityExtensions
             student.Id.ToString(),
             student.Name,
             formattedBirthday,
+            student.RegistrationId.ToString(),
             student.InteractiveGroupId.ToString()
         );
     }

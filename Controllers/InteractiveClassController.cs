@@ -46,10 +46,18 @@ public class InteractiveClassController(InteractiveClassUseCase useCase) : Contr
     }
 
     [HttpPost]
-    [Route("/interactive-classes/")]
-    public async Task AddAsync(InteractiveClassCreateDto interactiveClassCreateDto)
+    [Route("/interactive-classes")]
+    public async Task<IActionResult> AddAsync(InteractiveClassCreateDto interactiveClassCreateDto)
     {
-        await useCase.CreateInteractiveClassAsync(interactiveClassCreateDto);
+        try
+        {
+            var interactiveClass = await useCase.CreateInteractiveClassAsync(interactiveClassCreateDto);
+            return Ok(interactiveClass);
+        }
+        catch (DbNameConflictException e)
+        {
+            return Conflict(e.Message);
+        }
     }
 
     [HttpPut]

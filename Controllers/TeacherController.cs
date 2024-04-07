@@ -16,12 +16,32 @@ public class TeacherController(TeacherUseCase teacherUseCase) : ControllerBase
         return await teacherUseCase.GetAllTeachersAsync();
     }
 
+    [HttpGet]
+    [Route("/teachers/{id:int}")]
+    public async Task<TeacherViewDto> GetAsync(int id)
+    {
+        return await teacherUseCase.GetTeacherAsync(id);
+    }
+
     [HttpPost]
     [Route("/teachers")]
     public async Task<IActionResult> Add(TeacherCreateDto teacherCreateDto)
     {
-        await teacherUseCase.CreateTeacherAsync(teacherCreateDto);
-        return Ok();
+        try
+        {
+            var teacher = await teacherUseCase.CreateTeacherAsync(teacherCreateDto);
+            return Ok(teacher);
+        }
+        catch (DbNameConflictException e)
+        {
+            return Conflict(e.Message);
+        }
+    }
+
+    [HttpGet]
+    [Route("/teachers/by-name")]
+    public async Task<ICollection<TeacherViewDto>> QueryTeacherByName(string name) {
+        return await teacherUseCase.QueryTeachersByNameAsync(name);
     }
 
     [HttpPut]

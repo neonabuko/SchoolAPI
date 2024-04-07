@@ -3,12 +3,11 @@ using WizardAPI.Entities.DTOs.Create;
 using WizardAPI.Entities.DTOs.Edit;
 using WizardAPI.Entities.DTOs.View;
 using WizardAPI.UseCase.InteractiveGroupUseCases;
-using WizardAPI.UseCase.StudentUseCases;
 
 namespace WizardAPI.Controllers;
 
 [ApiController]
-public class InteractiveGroupController(InteractiveGroupUseCase groupUseCase, StudentUseCase studentUseCase) : ControllerBase
+public class InteractiveGroupController(InteractiveGroupUseCase groupUseCase) : ControllerBase
 {
     [HttpGet]
     [Route("/interactive-groups")]
@@ -25,7 +24,7 @@ public class InteractiveGroupController(InteractiveGroupUseCase groupUseCase, St
     }
 
     [HttpGet]
-    [Route("/interactive-groups/by-name/{name}")]
+    [Route("/interactive-groups/by-name")]
     public async Task<ICollection<InteractiveGroupViewDto>> QueryInteractiveGroupsByName(string name)
     {
         return await groupUseCase.QueryInteractiveGroupsByName(name);
@@ -35,8 +34,15 @@ public class InteractiveGroupController(InteractiveGroupUseCase groupUseCase, St
     [Route("/interactive-groups")]
     public async Task<IActionResult> AddAsync(InteractiveGroupCreateDto interactiveGroupCreateDto)
     {
-        await groupUseCase.CreateInteractiveGroupAsync(interactiveGroupCreateDto);
-        return Ok();
+        try
+        {
+            var interactiveGroup = await groupUseCase.CreateInteractiveGroupAsync(interactiveGroupCreateDto);
+            return Ok(interactiveGroup);
+        }
+        catch (DbNameConflictException e)
+        {
+            return Conflict(e.Message);
+        }
     }
 
     [HttpPut]

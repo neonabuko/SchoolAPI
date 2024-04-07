@@ -1,9 +1,8 @@
 namespace WizardAPI.Entities.DTOs.View;
 
 public record InteractiveGroupViewDto(
-    int Id,
+    string Id,
     string Name,
-    string DaysOfTheWeek,
-    string Time,
-    int? TeacherId
+    string DateTime,
+    string? TeacherId
     );

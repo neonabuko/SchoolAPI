@@ -4,5 +4,6 @@ public record StudentViewDto(
     string Id,
     string Name,
     string BirthDay,
+    string RegistrationId,
     string? InteractiveGroupId
     );

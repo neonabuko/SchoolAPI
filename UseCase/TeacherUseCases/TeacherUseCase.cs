@@ -9,11 +9,14 @@ using WizardAPI.UseCase.WizardUseCasesImpl;
 
 namespace WizardAPI.UseCase.TeacherUseCases;
 
-public class TeacherUseCase(WizardRepositoryImpl<Teacher> teacherClassRepository) : WizardUseCaseImpl<Teacher>(teacherClassRepository)
+public class TeacherUseCase(WizardRepositoryImpl<Teacher> teacherRepository) : WizardUseCaseImpl<Teacher>(teacherRepository)
 {
-    public async Task CreateTeacherAsync(TeacherCreateDto teacherCreateDto)
+    public async Task<TeacherViewDto> CreateTeacherAsync(TeacherCreateDto teacherCreateDto)
     {
-        var stringBirthday = teacherCreateDto.Birthday;
+        if (QueryTeachersByNameAsync(teacherCreateDto.Name).Result.Count > 0) 
+        throw new DbNameConflictException("A Teacher with name " + teacherCreateDto.Name + " already exists.");
+        
+        var stringBirthday = teacherCreateDto.Birthday ?? "01/01/2001";
         var dateTimeBirthday = DateTime.ParseExact(stringBirthday, "dd/MM/yyyy", CultureInfo.InvariantCulture);
         var dateOnlyBirthday = new DateOnly(dateTimeBirthday.Year, dateTimeBirthday.Month, dateTimeBirthday.Day);
         
@@ -23,26 +26,34 @@ public class TeacherUseCase(WizardRepositoryImpl<Teacher> teacherClassRepository
             Birthday = dateOnlyBirthday
         };
 
-        await teacherClassRepository.CreateAsync(newTeacher);
+        await teacherRepository.CreateAsync(newTeacher);
+        return newTeacher.AsViewDto();
     }
 
     public async Task<ICollection<TeacherViewDto>> GetAllTeachersAsync()
     {
-        return (await teacherClassRepository.GetAllAsync()).Select(t => t.AsViewDto()).ToList();
+        return (await teacherRepository.GetAllAsync()).Select(t => t.AsViewDto()).ToList();
+    }
+
+    public Task<ICollection<TeacherViewDto>> QueryTeachersByNameAsync(string name) {
+        return Task.FromResult<ICollection<TeacherViewDto>>(
+            teacherRepository.GetAllAsync().Result
+            .Where(t => t.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase))
+            .Select(t => t.AsViewDto()).ToList());
     }
 
     public async Task<TeacherViewDto> GetTeacherAsync(int id)
     {
-        return (await teacherClassRepository.GetAsync(id) ?? throw new NullReferenceException()).AsViewDto();
+        return (await teacherRepository.GetAsync(id) ?? throw new NullReferenceException()).AsViewDto();
     }
 
     public async Task UpdateTeacherAsync(int id, TeacherEditDto teacherEditDto)
     {
-        var toUpdate = await teacherClassRepository.GetAsync(id) ?? throw new NullReferenceException();
+        var toUpdate = await teacherRepository.GetAsync(id) ?? throw new NullReferenceException();
         
         toUpdate.Name = teacherEditDto.Name ?? toUpdate.Name;
         toUpdate.Birthday = teacherEditDto.Birthday ?? toUpdate.Birthday;
         
-        await teacherClassRepository.UpdateAsync(toUpdate);
+        await teacherRepository.UpdateAsync(toUpdate);
     }
 }

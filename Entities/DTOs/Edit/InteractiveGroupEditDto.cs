@@ -2,7 +2,6 @@ namespace WizardAPI.Entities.DTOs.Edit;
 
 public record InteractiveGroupEditDto(
     string? Name,
-    string? DaysOfTheWeek,
-    TimeOnly? Time,
+    string? DateTime,
     int? TeacherId
     );

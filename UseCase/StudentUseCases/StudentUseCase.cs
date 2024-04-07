@@ -9,11 +9,14 @@ using WizardAPI.UseCase.WizardUseCasesImpl;
 
 namespace WizardAPI.UseCase.StudentUseCases;
 
-public class StudentUseCase(WizardRepositoryImpl<Student> studentRepository)
-    : WizardUseCaseImpl<Student>(studentRepository)
+public class StudentUseCase(WizardRepositoryImpl<Student> studentRepository): WizardUseCaseImpl<Student>(studentRepository)
 {
     public async Task<StudentViewDto> CreateStudentAsync(StudentCreateDto studentCreateDto)
     {
+        var name = studentCreateDto.Name;
+        if (studentRepository.GetAllAsync().Result.Where(s => s.Name == name).ToList().Count > 0) 
+        throw new DbNameConflictException("A student with the same name already exists.");
+        
         var stringBirthday = studentCreateDto.Birthday ?? "01/01/2001";
         var dateTimeBirthday = DateTime.ParseExact(stringBirthday, "dd/MM/yyyy", CultureInfo.InvariantCulture);
         var dateOnlyBirthday = new DateOnly(dateTimeBirthday.Year, dateTimeBirthday.Month, dateTimeBirthday.Day);
@@ -22,6 +25,7 @@ public class StudentUseCase(WizardRepositoryImpl<Student> studentRepository)
         {
             Name = studentCreateDto.Name,
             Birthday = dateOnlyBirthday,
+            RegistrationId = int.Parse(studentCreateDto.RegistrationId),
             InteractiveGroupId = studentCreateDto.InteractiveGroupId
         };
 
@@ -48,11 +52,12 @@ public class StudentUseCase(WizardRepositoryImpl<Student> studentRepository)
         return (await studentRepository.GetAsync(id) ?? throw new NullReferenceException()).AsViewDto();
     }
 
-    public Task<ICollection<StudentViewDto>> GetStudentsByInteractiveGroupIdAsync(int groupId)
+    public async Task<ICollection<StudentViewDto>> GetStudentsByInteractiveGroupIdAsync(int groupId)
     {
-        return Task.FromResult<ICollection<StudentViewDto>>(studentRepository.GetAllAsync().Result
-            .Where(s => s.InteractiveGroupId == groupId)
-            .Select(s => s.AsViewDto()).ToList());
+        var students = await studentRepository.GetAllAsync();
+        return students
+        .Where(s => s.InteractiveGroupId == groupId)
+        .Select(s => s.AsViewDto()).ToList();
     }
 
     public async Task UpdateStudentAsync(int id, StudentEditDto studentEditDto)

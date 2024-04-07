@@ -6,9 +6,8 @@ public class InteractiveGroup
 {
     public int Id { get; set; }
     [StringLength(50)]
-    public string Name { get; set; }
-    public string DaysOfTheWeek { get; set; }
-    public TimeOnly Time { get; set; }
+    public required string Name { get; set; }
+    public required DateTime DateTime { get; set; }
     
     public int? TeacherId { get; set; }
     public Teacher? Teacher { get; set; }

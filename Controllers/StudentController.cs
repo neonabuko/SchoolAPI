@@ -31,7 +31,7 @@ public class StudentController(StudentUseCase useCase) : ControllerBase
     }
     
     [HttpGet]
-    [Route("/students/by-name/{name}")]
+    [Route("/students/by-name")]
     public async Task<ICollection<StudentViewDto>> QueryStudentsByNameAsync(string name)
     {
         return await useCase.QueryStudentsByName(name);
@@ -39,9 +39,17 @@ public class StudentController(StudentUseCase useCase) : ControllerBase
 
     [HttpPost]
     [Route("/students")]
-    public async Task<StudentViewDto> AddAsync(StudentCreateDto studentCreateDto)
+    public async Task<IActionResult> AddAsync(StudentCreateDto studentCreateDto)
     {
-        return await useCase.CreateStudentAsync(studentCreateDto);
+        try
+        {
+            var studentDto = await useCase.CreateStudentAsync(studentCreateDto);
+            return Ok(studentDto);
+        }
+        catch (DbNameConflictException e)
+        {
+            return Conflict(e.Message);
+        }
     }
 
     [HttpPut]

@@ -8,6 +8,7 @@ public class Student
     [StringLength(50)]
     public required string Name { get; set; }
     public required DateOnly Birthday { get; set; }
+    public required int RegistrationId { get; set; }
 
     public int? InteractiveGroupId { get; set; }
     public InteractiveGroup? InteractiveGroup { get; set; }
