@@ -1,13 +1,13 @@
 using System.ComponentModel.DataAnnotations;
-using WizardAPI.Entities.Enums;
+using SchoolAPI.Entities.Enums;
 
-namespace WizardAPI.Entities;
+namespace SchoolAPI.Entities;
 
-public class InteractiveClass
+public class Lesson
 {
     public int Id { get; set; }
     [StringLength(20)]
-    public required string Lesson { get; set; }
+    public required string Name { get; set; }
     public required DateTime DateTime { get; set; }
     
     public Grades? Oral { get; set; }

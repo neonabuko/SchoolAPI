@@ -1,8 +1,8 @@
-namespace WizardAPI.Entities.DTOs.Create;
+namespace SchoolAPI.Entities.DTOs.Create;
 
 public record StudentCreateDto(
     string Name,
     string? Birthday,
-    string RegistrationId,
-    int? InteractiveGroupId
+    string? RegistrationId,
+    int? GroupId
     );

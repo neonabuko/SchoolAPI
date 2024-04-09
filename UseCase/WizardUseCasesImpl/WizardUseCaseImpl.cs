@@ -1,9 +1,9 @@
-using WizardAPI.Repositories.Interfaces;
-using WizardAPI.UseCase.Interfaces;
+using SchoolAPI.Repositories.Interfaces;
+using SchoolAPI.UseCase.Interfaces;
 
-namespace WizardAPI.UseCase.WizardUseCasesImpl;
+namespace SchoolAPI.UseCase.SchoolUseCasesImpl;
 
-public class WizardUseCaseImpl<T>(IWizardRepository<T> groupRepository) : IWizardUseCase<T> where T : class
+public class SchoolUseCaseImpl<T>(ISchoolRepository<T> groupRepository) : ISchoolUseCase<T> where T : class
 {
     public async Task CreateAsync(T entity)
     {

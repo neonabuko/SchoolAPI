@@ -1,9 +1,9 @@
-using WizardAPI.Data;
-using WizardAPI.Entities;
-using WizardAPI.Repositories.WizardRepositoriesImpl;
+using SchoolAPI.Data;
+using SchoolAPI.Entities;
+using SchoolAPI.Repositories.SchoolRepositoriesImpl;
 
-namespace WizardAPI.Repositories.TeacherRepositories;
+namespace SchoolAPI.Repositories.TeacherRepositories;
 
-public class TeacherRepository(WizardContext context) : WizardRepositoryImpl<Teacher>(context)
+public class TeacherRepository(SchoolContext context) : SchoolRepositoryImpl<Teacher>(context)
 {
 }

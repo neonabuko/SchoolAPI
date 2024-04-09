@@ -1,63 +1,75 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using WizardAPI.Entities;
-using WizardAPI.Repositories.GroupRepositories;
-using WizardAPI.Repositories.StudentRepositories;
-using WizardAPI.Repositories.TeacherRepositories;
-using WizardAPI.Repositories.WizardClassRepositories;
-using WizardAPI.Repositories.WizardRepositoriesImpl;
-using WizardAPI.UseCase.InteractiveClassUseCases;
-using WizardAPI.UseCase.InteractiveGroupUseCases;
-using WizardAPI.UseCase.StudentUseCases;
-using WizardAPI.UseCase.TeacherUseCases;
-using WizardAPI.UseCase.WizardUseCasesImpl;
+using SchoolAPI.Entities;
+using SchoolAPI.Repositories.GroupRepositories;
+using SchoolAPI.Repositories.StudentRepositories;
+using SchoolAPI.Repositories.TeacherRepositories;
+using SchoolAPI.Repositories.LessonRepositories;
+using SchoolAPI.Repositories.SchoolRepositoriesImpl;
+using SchoolAPI.UseCase.LessonUseCases;
+using SchoolAPI.UseCase.GroupUseCases;
+using SchoolAPI.UseCase.StudentUseCases;
+using SchoolAPI.UseCase.TeacherUseCases;
+using SchoolAPI.UseCase.SchoolUseCasesImpl;
 
-namespace WizardAPI.Data;
+namespace SchoolAPI.Data;
 
 public static class DataExtensions
 {
     public static async Task InitializeDbAsync(this IServiceProvider serviceProvider)
     {
         using var scope = serviceProvider.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<WizardContext>();
+        var dbContext = scope.ServiceProvider.GetRequiredService<SchoolContext>();
         await dbContext.Database.MigrateAsync();
     }
 
     public static IServiceCollection ConfigureServices(this IServiceCollection services,
         IConfiguration configuration)
     {
-        var connectionString = configuration.GetConnectionString("WizardContext");
-        services.AddSqlServer<WizardContext>(connectionString);
+        var connectionString = configuration.GetConnectionString("SchoolContext");
+        services.AddSqlServer<SchoolContext>(connectionString);
         
         // repositories
         services.AddScoped<TeacherRepository>();
-        services.AddTransient<WizardRepositoryImpl<Teacher>, TeacherRepository>();
+        services.AddTransient<SchoolRepositoryImpl<Teacher>, TeacherRepository>();
 
-        services.AddScoped<WizardClassRepository>();
-        services.AddTransient<WizardRepositoryImpl<InteractiveClass>, WizardClassRepository>();
+        services.AddScoped<LessonRepository>();
+        services.AddTransient<SchoolRepositoryImpl<Lesson>, LessonRepository>();
 
         services.AddScoped<GroupRepository>();
-        services.AddTransient<WizardRepositoryImpl<InteractiveGroup>, GroupRepository>();
+        services.AddTransient<SchoolRepositoryImpl<Group>, GroupRepository>();
         
         services.AddScoped<StudentRepository>();
-        services.AddTransient<WizardRepositoryImpl<Student>, StudentRepository>();
+        services.AddTransient<SchoolRepositoryImpl<Student>, StudentRepository>();
 
         // use cases
         services.AddScoped<TeacherUseCase>();
-        services.AddTransient<WizardUseCaseImpl<Teacher>, TeacherUseCase>();
+        services.AddTransient<SchoolUseCaseImpl<Teacher>, TeacherUseCase>();
 
-        services.AddScoped<InteractiveClassUseCase>();
-        services.AddTransient<WizardUseCaseImpl<InteractiveClass>, InteractiveClassUseCase>();
+        services.AddScoped<LessonUseCase>();
+        services.AddTransient<SchoolUseCaseImpl<Lesson>, LessonUseCase>();
 
-        services.AddScoped<InteractiveGroupUseCase>();
-        services.AddTransient<WizardUseCaseImpl<InteractiveGroup>, InteractiveGroupUseCase>();
+        services.AddScoped<GroupUseCase>();
+        services.AddTransient<SchoolUseCaseImpl<Group>, GroupUseCase>();
 
         services.AddScoped<StudentUseCase>();
-        services.AddTransient<WizardUseCaseImpl<Student>, StudentUseCase>();
+        services.AddTransient<SchoolUseCaseImpl<Student>, StudentUseCase>();
         
         services.AddControllers();
         services.AddEndpointsApiExplorer();
         
         services.AddSwaggerGen();
+
+        const string AuthScheme = "cookie";
+        
+        services.AddAuthentication(AuthScheme)
+            .AddCookie(AuthScheme);
+
+        services.AddAuthorization();
+
+        services.AddIdentity<IdentityUser, IdentityRole>()
+        .AddEntityFrameworkStores<SchoolContext>()
+        .AddDefaultTokenProviders();
 
         services.AddCors(options =>
         {

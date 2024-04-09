@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace WizardAPI.Entities;
+namespace SchoolAPI.Entities;
 
-public class InteractiveGroup
+public class Group
 {
     public int Id { get; set; }
     [StringLength(50)]

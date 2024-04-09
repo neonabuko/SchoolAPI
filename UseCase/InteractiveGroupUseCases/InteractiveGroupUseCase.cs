@@ -1,46 +1,46 @@
-using WizardAPI.Entities;
-using WizardAPI.Entities.DTOs.Create;
-using WizardAPI.Entities.DTOs.Edit;
-using WizardAPI.Entities.DTOs.View;
-using WizardAPI.Entities.Extensions;
-using WizardAPI.Repositories.WizardRepositoriesImpl;
-using WizardAPI.UseCase.WizardUseCasesImpl;
+using SchoolAPI.Entities;
+using SchoolAPI.Entities.DTOs.Create;
+using SchoolAPI.Entities.DTOs.Edit;
+using SchoolAPI.Entities.DTOs.View;
+using SchoolAPI.Entities.Extensions;
+using SchoolAPI.Repositories.SchoolRepositoriesImpl;
+using SchoolAPI.UseCase.SchoolUseCasesImpl;
 
-namespace WizardAPI.UseCase.InteractiveGroupUseCases;
+namespace SchoolAPI.UseCase.GroupUseCases;
 
-public class InteractiveGroupUseCase(WizardRepositoryImpl<InteractiveGroup> interactiveGroupRepository) 
-: WizardUseCaseImpl<InteractiveGroup>(interactiveGroupRepository)
+public class GroupUseCase(SchoolRepositoryImpl<Group> GroupRepository) 
+: SchoolUseCaseImpl<Group>(GroupRepository)
 {
-    public async Task<InteractiveGroupViewDto> CreateInteractiveGroupAsync(InteractiveGroupCreateDto interactiveGroupCreateDto)
+    public async Task<GroupViewDto> CreateGroupAsync(GroupCreateDto GroupCreateDto)
     {
-        var teacherId = interactiveGroupCreateDto.TeacherId;
-        var dateTime = interactiveGroupCreateDto.DateTime;
+        var teacherId = GroupCreateDto.TeacherId;
+        var dateTime = GroupCreateDto.DateTime;
         if (teacherId != null) {
-            if (GetInteractiveGroupByTeacherAndDateTimeAsync((int)teacherId, dateTime).Result.Count > 0)
+            if (GetGroupByTeacherAndDateTimeAsync((int)teacherId, dateTime).Result.Count > 0)
             throw new DbNameConflictException("Date/Time already taken by another group.");
         }
 
-        InteractiveGroup newInteractiveGroup = new()
+        Group newGroup = new()
         {
-            Name = interactiveGroupCreateDto.Name,
-            DateTime = DataConverters.StringToDateTime(interactiveGroupCreateDto.DateTime),
-            TeacherId = interactiveGroupCreateDto.TeacherId
+            Name = GroupCreateDto.Name,
+            DateTime = DataConverters.StringToDateTime(GroupCreateDto.DateTime),
+            TeacherId = GroupCreateDto.TeacherId
         };
 
-        await interactiveGroupRepository.CreateAsync(newInteractiveGroup);
-        return newInteractiveGroup.AsViewDto();
+        await GroupRepository.CreateAsync(newGroup);
+        return newGroup.AsViewDto();
     }
 
-    public async Task<ICollection<InteractiveGroupViewDto>> GetAllInteractiveGroupsAsync()
+    public async Task<ICollection<GroupViewDto>> GetAllGroupsAsync()
     {
-        return (await interactiveGroupRepository.GetAllAsync()).Select(group => group.AsViewDto()).ToList();
+        return (await GroupRepository.GetAllAsync()).Select(group => group.AsViewDto()).ToList();
     }
 
-    public async Task<ICollection<InteractiveGroupViewDto>> GetInteractiveGroupByTeacherAndDateTimeAsync(int teacherId, string dateTime) {
+    public async Task<ICollection<GroupViewDto>> GetGroupByTeacherAndDateTimeAsync(int teacherId, string dateTime) {
         var formattedDateTime = DataConverters.StringToDateTime(dateTime);
 
-        var interactiveGroups = await interactiveGroupRepository.GetAllAsync();
-        return interactiveGroups
+        var Groups = await GroupRepository.GetAllAsync();
+        return Groups
             .Where(i => i.TeacherId == teacherId)
             .Where(i => i.DateTime == formattedDateTime)
             .Select(i => i.AsViewDto())
@@ -48,25 +48,25 @@ public class InteractiveGroupUseCase(WizardRepositoryImpl<InteractiveGroup> inte
     }
 
 
-    public Task<InteractiveGroupViewDto> GetInteractiveGroupAsync(int id)
+    public Task<GroupViewDto> GetGroupAsync(int id)
     {
         return Task.FromResult((
-            interactiveGroupRepository.GetAsync(id).Result ?? throw new NullReferenceException()
+            GroupRepository.GetAsync(id).Result ?? throw new NullReferenceException()
             ).AsViewDto());
     }
 
-    public async Task<ICollection<InteractiveGroupViewDto>> QueryInteractiveGroupsByName(string name)
+    public async Task<ICollection<GroupViewDto>> QueryGroupsByName(string name)
     {
-        var interactiveGroups = await interactiveGroupRepository.GetAllAsync();
-        return interactiveGroups
+        var Groups = await GroupRepository.GetAllAsync();
+        return Groups
         .Where(s => s.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase))
         .Select(s => s.AsViewDto())
         .ToList();
     }
     
-    public async Task UpdateInteractiveGroupAsync(int id, InteractiveGroupEditDto dto)
+    public async Task UpdateGroupAsync(int id, GroupEditDto dto)
     {
-        var groupToUpdate = await interactiveGroupRepository.GetAsync(id) 
+        var groupToUpdate = await GroupRepository.GetAsync(id) 
                             ?? throw new NullReferenceException("Group not found.");
         
         groupToUpdate.Name = dto.Name ?? groupToUpdate.Name;
@@ -76,6 +76,6 @@ public class InteractiveGroupUseCase(WizardRepositoryImpl<InteractiveGroup> inte
         }
         groupToUpdate.TeacherId = dto.TeacherId ?? groupToUpdate.TeacherId;
 
-        await interactiveGroupRepository.UpdateAsync(groupToUpdate);
+        await GroupRepository.UpdateAsync(groupToUpdate);
     }
 }

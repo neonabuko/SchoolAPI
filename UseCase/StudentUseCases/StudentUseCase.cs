@@ -1,15 +1,16 @@
 using System.Globalization;
-using WizardAPI.Entities;
-using WizardAPI.Entities.DTOs.Create;
-using WizardAPI.Entities.DTOs.Edit;
-using WizardAPI.Entities.DTOs.View;
-using WizardAPI.Entities.Extensions;
-using WizardAPI.Repositories.WizardRepositoriesImpl;
-using WizardAPI.UseCase.WizardUseCasesImpl;
+using Microsoft.VisualBasic;
+using SchoolAPI.Entities;
+using SchoolAPI.Entities.DTOs.Create;
+using SchoolAPI.Entities.DTOs.Edit;
+using SchoolAPI.Entities.DTOs.View;
+using SchoolAPI.Entities.Extensions;
+using SchoolAPI.Repositories.SchoolRepositoriesImpl;
+using SchoolAPI.UseCase.SchoolUseCasesImpl;
 
-namespace WizardAPI.UseCase.StudentUseCases;
+namespace SchoolAPI.UseCase.StudentUseCases;
 
-public class StudentUseCase(WizardRepositoryImpl<Student> studentRepository): WizardUseCaseImpl<Student>(studentRepository)
+public class StudentUseCase(SchoolRepositoryImpl<Student> studentRepository): SchoolUseCaseImpl<Student>(studentRepository)
 {
     public async Task<StudentViewDto> CreateStudentAsync(StudentCreateDto studentCreateDto)
     {
@@ -20,13 +21,13 @@ public class StudentUseCase(WizardRepositoryImpl<Student> studentRepository): Wi
         var stringBirthday = studentCreateDto.Birthday ?? "01/01/2001";
         var dateTimeBirthday = DateTime.ParseExact(stringBirthday, "dd/MM/yyyy", CultureInfo.InvariantCulture);
         var dateOnlyBirthday = new DateOnly(dateTimeBirthday.Year, dateTimeBirthday.Month, dateTimeBirthday.Day);
-
+        var regId = studentCreateDto.RegistrationId ?? "";
         Student newStudent = new()
         {
             Name = studentCreateDto.Name,
             Birthday = dateOnlyBirthday,
-            RegistrationId = int.Parse(studentCreateDto.RegistrationId),
-            InteractiveGroupId = studentCreateDto.InteractiveGroupId
+            RegistrationId = regId.Length > 0 ? int.Parse(regId) : null,
+            GroupId = studentCreateDto.GroupId
         };
 
         await studentRepository.CreateAsync(newStudent);
@@ -52,11 +53,11 @@ public class StudentUseCase(WizardRepositoryImpl<Student> studentRepository): Wi
         return (await studentRepository.GetAsync(id) ?? throw new NullReferenceException()).AsViewDto();
     }
 
-    public async Task<ICollection<StudentViewDto>> GetStudentsByInteractiveGroupIdAsync(int groupId)
+    public async Task<ICollection<StudentViewDto>> GetStudentsByGroupIdAsync(int groupId)
     {
         var students = await studentRepository.GetAllAsync();
         return students
-        .Where(s => s.InteractiveGroupId == groupId)
+        .Where(s => s.GroupId == groupId)
         .Select(s => s.AsViewDto()).ToList();
     }
 
@@ -67,7 +68,7 @@ public class StudentUseCase(WizardRepositoryImpl<Student> studentRepository): Wi
         {
             toUpdate.Name = studentEditDto.Name ?? toUpdate.Name;
             toUpdate.Birthday = studentEditDto.Birthday ?? toUpdate.Birthday;
-            toUpdate.InteractiveGroupId = studentEditDto.InteractiveGroupId ?? toUpdate.InteractiveGroupId;
+            toUpdate.GroupId = studentEditDto.GroupId ?? toUpdate.GroupId;
         }
 
         if (toUpdate != null) await studentRepository.UpdateAsync(toUpdate);

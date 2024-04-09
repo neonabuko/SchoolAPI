@@ -1,14 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace WizardAPI.Controllers;
+namespace SchoolAPI.Controllers;
 
 [ApiController]
 public class HomeController : ControllerBase
 {
-    [HttpGet]
-    [Route("/")]
-    public IActionResult Index()
-    {
-        return Ok();
-    }
+    [HttpGet("/")]
+    public IActionResult Index() => Ok();
 }

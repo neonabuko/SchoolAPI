@@ -1,121 +1,121 @@
 using System.Globalization;
-using WizardAPI.Entities;
-using WizardAPI.Entities.DTOs.Create;
-using WizardAPI.Entities.DTOs.Edit;
-using WizardAPI.Entities.DTOs.View;
-using WizardAPI.Entities.Enums;
-using WizardAPI.Entities.Extensions;
-using WizardAPI.Repositories.WizardRepositoriesImpl;
-using WizardAPI.UseCase.WizardUseCasesImpl;
+using SchoolAPI.Entities;
+using SchoolAPI.Entities.DTOs.Create;
+using SchoolAPI.Entities.DTOs.Edit;
+using SchoolAPI.Entities.DTOs.View;
+using SchoolAPI.Entities.Enums;
+using SchoolAPI.Entities.Extensions;
+using SchoolAPI.Repositories.SchoolRepositoriesImpl;
+using SchoolAPI.UseCase.SchoolUseCasesImpl;
 
-namespace WizardAPI.UseCase.InteractiveClassUseCases;
+namespace SchoolAPI.UseCase.LessonUseCases;
 
-public class InteractiveClassUseCase(
-    WizardRepositoryImpl<InteractiveClass> interactiveClassRepository,
-    WizardRepositoryImpl<Student> studentRepository) : WizardUseCaseImpl<InteractiveClass>(interactiveClassRepository)
+public class LessonUseCase(
+    SchoolRepositoryImpl<Lesson> LessonRepository,
+    SchoolRepositoryImpl<Student> studentRepository) : SchoolUseCaseImpl<Lesson>(LessonRepository)
 {
-    public async Task<InteractiveClassViewDto> CreateInteractiveClassAsync(InteractiveClassCreateDto interactiveClassCreateDto)
+    public async Task<LessonViewDto> CreateLessonAsync(LessonCreateDto LessonCreateDto)
     {
-        if (interactiveClassCreateDto.StudentId != null) {
+        if (LessonCreateDto.StudentId != null) {
             if (
-                 GetInteractiveClassesByStudentIdAsync((int)interactiveClassCreateDto.StudentId)
+                 GetAllLessonsFromStudentAsync((int)LessonCreateDto.StudentId)
                 .Result
-                .Where(c => c.Lesson == interactiveClassCreateDto.Lesson)
+                .Where(c => c.Name == LessonCreateDto.Name)
                 .ToList()
                 .Count > 0
-            ) throw new DbNameConflictException("Student already has a lesson with name '" + interactiveClassCreateDto.Lesson + "'");
+            ) throw new DbNameConflictException("Student already has a lesson with name '" + LessonCreateDto.Name + "'");
         }
 
         DateTime.TryParseExact(
-            interactiveClassCreateDto.DateTime,
+            LessonCreateDto.DateTime,
             "dd/MM HH:mm",
             CultureInfo.InvariantCulture,
             DateTimeStyles.None,
             out var dateTime
         );
 
-        Enum.TryParse(interactiveClassCreateDto.Oral ?? "None", true, out Grades oral);
-        Enum.TryParse(interactiveClassCreateDto.HwGrade ?? "None", true, out Grades hwGrade);
+        Enum.TryParse(LessonCreateDto.Oral ?? "None", true, out Grades oral);
+        Enum.TryParse(LessonCreateDto.HwGrade ?? "None", true, out Grades hwGrade);
 
-        InteractiveClass newInteractiveClass = new()
+        Lesson newLesson = new()
         {
-            Lesson = interactiveClassCreateDto.Lesson,
+            Name = LessonCreateDto.Name,
             DateTime = dateTime,
             Oral = oral,
-            HwDelivered = bool.Parse(interactiveClassCreateDto.HwDelivered ?? "false"),
+            HwDelivered = bool.Parse(LessonCreateDto.HwDelivered ?? "false"),
             HwGrade = hwGrade,
-            StudentPresent = bool.Parse(interactiveClassCreateDto.StudentPresent ?? "false"),
-            StudentId = interactiveClassCreateDto.StudentId
+            StudentPresent = bool.Parse(LessonCreateDto.StudentPresent ?? "false"),
+            StudentId = LessonCreateDto.StudentId
         };
 
-        await interactiveClassRepository.CreateAsync(newInteractiveClass);
-        return newInteractiveClass.AsViewDto();
+        await LessonRepository.CreateAsync(newLesson);
+        return newLesson.AsViewDto();
     }
 
-    public async Task<ICollection<InteractiveClassViewDto>> GetAllInteractiveClassesAsync()
+    public async Task<ICollection<LessonViewDto>> GetAllLessonesAsync()
     {
-        return (await interactiveClassRepository.GetAllAsync()).Select(i => i.AsViewDto()).ToList();
+        return (await LessonRepository.GetAllAsync()).Select(i => i.AsViewDto()).ToList();
     }
 
-    public async Task<ICollection<InteractiveClassViewDto>> GetInteractiveClassesByStudentIdAsync(int studentId)
+    public async Task<ICollection<LessonViewDto>> GetAllLessonsFromStudentAsync(int studentId)
     {
-        var interactiveClasses = await interactiveClassRepository.GetAllAsync();
-        return interactiveClasses
+        var Lessones = await LessonRepository.GetAllAsync();
+        return Lessones
             .Where(i => i.StudentId == studentId)
             .Select(i => i.AsViewDto())
             .ToList();
     }
 
-    public async Task<InteractiveClassViewDto> GetFirstInteractiveClassScheduledForTodayByStudentIdAsync(int studentId)
+    public async Task<LessonViewDto> GetStudentsMostRecentLessonAsync(int studentId)
     {
-        var interactiveClasses = await interactiveClassRepository.GetAllAsync();
-            return interactiveClasses
+        var Lessones = await LessonRepository.GetAllAsync();
+            return Lessones
                 .Where(i => i.StudentId == studentId)
                 .Where(i => i.DateTime.Day == DateTime.Now.Day)
                 .Select(i => i.AsViewDto()).ToList().First();
     }
 
-    public Task<ICollection<StudentViewDto>> GetStudentsThatHaveClassTodayByGroupId(int groupId)
+    public Task<ICollection<StudentViewDto>> GetStudentsThatHaveLessonTodayAsync(int groupId)
     {
-        var classes = interactiveClassRepository.GetAllAsync().Result
+        var classes = LessonRepository.GetAllAsync().Result
             .Where(i => i.DateTime.Date == DateTime.Now.Date).ToList();
 
         return Task.FromResult<ICollection<StudentViewDto>>(classes.Select(
                 iClass =>
                     studentRepository.GetAsync(iClass.StudentId ?? throw new NullReferenceException()).Result
                     ?? throw new NullReferenceException())
-            .ToList().Where(s => s.InteractiveGroupId == groupId).Select(s => s.AsViewDto()).ToList());
+            .ToList().Where(s => s.GroupId == groupId).Select(s => s.AsViewDto()).ToList());
     }
 
-    public async Task<InteractiveClassViewDto> GetInteractiveClassAsync(int id)
+    public async Task<LessonViewDto> GetLessonAsync(int id)
     {
-        return (await interactiveClassRepository.GetAsync(id) ?? throw new NullReferenceException()).AsViewDto();
+        return (await LessonRepository.GetAsync(id) ?? throw new NullReferenceException()).AsViewDto();
     }
 
-    public async Task UpdateInteractiveClassAsync(int id, InteractiveClassEditDto interactiveClassEditDto)
+    public async Task UpdateLessonAsync(int id, LessonEditDto LessonEditDto)
     {
-        var toUpdate = await interactiveClassRepository.GetAsync(id) ?? throw new NullReferenceException();
+        var toUpdate = await LessonRepository.GetAsync(id) ?? throw new NullReferenceException();
 
-        Enum.TryParse(interactiveClassEditDto.Oral ?? "None", true, out Grades oral);
-        Enum.TryParse(interactiveClassEditDto.HwGrade ?? "None", true, out Grades hwGrade);
+        Enum.TryParse(LessonEditDto.Oral ?? "None", true, out Grades oral);
+        Enum.TryParse(LessonEditDto.HwGrade ?? "None", true, out Grades hwGrade);
         
-        toUpdate.Lesson = interactiveClassEditDto.Lesson ?? toUpdate.Lesson;
-        toUpdate.DateTime = interactiveClassEditDto.DateTime != null
-            ? DataConverters.StringToDateTime(interactiveClassEditDto.DateTime)
+        toUpdate.Name = LessonEditDto.Name ?? toUpdate.Name;
+        toUpdate.DateTime = LessonEditDto.DateTime != null
+            ? DataConverters.StringToDateTime(LessonEditDto.DateTime)
             : toUpdate.DateTime;
         toUpdate.Oral = oral;
-        toUpdate.HwDelivered = bool.Parse(interactiveClassEditDto.HwDelivered ?? "false");
+        toUpdate.HwDelivered = bool.Parse(LessonEditDto.HwDelivered ?? "false");
         toUpdate.HwGrade = hwGrade;
-        toUpdate.StudentPresent = bool.Parse(interactiveClassEditDto.StudentPresent ?? "false");
-        if (interactiveClassEditDto.StudentId != null)
+        toUpdate.StudentPresent = bool.Parse(LessonEditDto.StudentPresent ?? "false");
+        if (LessonEditDto.StudentId != null)
         {
-            toUpdate.StudentId = int.Parse(interactiveClassEditDto.StudentId);
+            toUpdate.StudentId = int.Parse(LessonEditDto.StudentId);
         }
         else
         {
             toUpdate.StudentId = null;
         }
 
-        await interactiveClassRepository.UpdateAsync(toUpdate);
+        await LessonRepository.UpdateAsync(toUpdate);
     }
 }

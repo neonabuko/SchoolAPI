@@ -1,6 +1,6 @@
-namespace WizardAPI.UseCase.Interfaces;
+namespace SchoolAPI.UseCase.Interfaces;
 
-public interface IWizardUseCase<T>
+public interface ISchoolUseCase<T>
 {
     Task CreateAsync(T entity);
     Task<ICollection<T>> GetAllAsync();

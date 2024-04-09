@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace WizardAPI.Entities;
+namespace SchoolAPI.Entities;
 
 public class Student
 {
@@ -8,9 +8,9 @@ public class Student
     [StringLength(50)]
     public required string Name { get; set; }
     public required DateOnly Birthday { get; set; }
-    public required int RegistrationId { get; set; }
+    public int? RegistrationId { get; set; }
 
-    public int? InteractiveGroupId { get; set; }
-    public InteractiveGroup? InteractiveGroup { get; set; }
-    public ICollection<InteractiveClass>? InteractiveClasses { get; set; }
+    public int? GroupId { get; set; }
+    public Group? Group { get; set; }
+    public ICollection<Lesson>? Lessones { get; set; }
 }

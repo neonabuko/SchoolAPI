@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
-using WizardAPI.Data;
-using WizardAPI.Repositories.Interfaces;
+using SchoolAPI.Data;
+using SchoolAPI.Repositories.Interfaces;
 
-namespace WizardAPI.Repositories.WizardRepositoriesImpl;
+namespace SchoolAPI.Repositories.SchoolRepositoriesImpl;
 
-public class WizardRepositoryImpl<T>(WizardContext context) : IWizardRepository<T> where T : class
+public class SchoolRepositoryImpl<T>(SchoolContext context) : ISchoolRepository<T> where T : class
 {
     public async Task CreateAsync(T entity)
     {

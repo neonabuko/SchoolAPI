@@ -1,15 +1,15 @@
 using System.Globalization;
-using WizardAPI.Entities;
-using WizardAPI.Entities.DTOs.Create;
-using WizardAPI.Entities.DTOs.Edit;
-using WizardAPI.Entities.DTOs.View;
-using WizardAPI.Entities.Extensions;
-using WizardAPI.Repositories.WizardRepositoriesImpl;
-using WizardAPI.UseCase.WizardUseCasesImpl;
+using SchoolAPI.Entities;
+using SchoolAPI.Entities.DTOs.Create;
+using SchoolAPI.Entities.DTOs.Edit;
+using SchoolAPI.Entities.DTOs.View;
+using SchoolAPI.Entities.Extensions;
+using SchoolAPI.Repositories.SchoolRepositoriesImpl;
+using SchoolAPI.UseCase.SchoolUseCasesImpl;
 
-namespace WizardAPI.UseCase.TeacherUseCases;
+namespace SchoolAPI.UseCase.TeacherUseCases;
 
-public class TeacherUseCase(WizardRepositoryImpl<Teacher> teacherRepository) : WizardUseCaseImpl<Teacher>(teacherRepository)
+public class TeacherUseCase(SchoolRepositoryImpl<Teacher> teacherRepository) : SchoolUseCaseImpl<Teacher>(teacherRepository)
 {
     public async Task<TeacherViewDto> CreateTeacherAsync(TeacherCreateDto teacherCreateDto)
     {

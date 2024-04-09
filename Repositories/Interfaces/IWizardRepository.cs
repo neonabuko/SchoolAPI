@@ -1,6 +1,6 @@
-namespace WizardAPI.Repositories.Interfaces;
+namespace SchoolAPI.Repositories.Interfaces;
 
-public interface IWizardRepository<T>
+public interface ISchoolRepository<T>
 {
     Task CreateAsync(T entity);
     Task<ICollection<T>> GetAllAsync();

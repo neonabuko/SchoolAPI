@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace WizardAPI.Entities.Extensions;
+namespace SchoolAPI.Entities.Extensions;
 
 public static class DataConverters
 {

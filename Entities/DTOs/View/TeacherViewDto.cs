@@ -1,4 +1,4 @@
-namespace WizardAPI.Entities.DTOs.View;
+namespace SchoolAPI.Entities.DTOs.View;
 
 public record TeacherViewDto(
     string Id,

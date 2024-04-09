@@ -1,6 +1,6 @@
-namespace WizardAPI.Entities.DTOs.View;
+namespace SchoolAPI.Entities.DTOs.View;
 
-public record InteractiveGroupViewDto(
+public record GroupViewDto(
     string Id,
     string Name,
     string DateTime,

@@ -1,9 +1,7 @@
-using WizardAPI.Entities.Enums;
+namespace SchoolAPI.Entities.DTOs.Edit;
 
-namespace WizardAPI.Entities.DTOs.Edit;
-
-public record InteractiveClassEditDto(
-    string? Lesson,
+public record LessonEditDto(
+    string? Name,
     string? DateTime,
     string? Oral,
     string? HwDelivered,

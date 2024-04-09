@@ -1,4 +1,4 @@
-namespace WizardAPI.Entities.DTOs.Edit;
+namespace SchoolAPI.Entities.DTOs.Edit;
 
 public record TeacherEditDto(
     string? Name,

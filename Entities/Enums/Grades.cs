@@ -1,4 +1,4 @@
-namespace WizardAPI.Entities.Enums;
+namespace SchoolAPI.Entities.Enums;
 
 public enum Grades
 {

@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
-using WizardAPI.Entities.DTOs.Create;
-using WizardAPI.Entities.DTOs.Edit;
-using WizardAPI.Entities.DTOs.View;
-using WizardAPI.UseCase.StudentUseCases;
+using SchoolAPI.Entities.DTOs.Create;
+using SchoolAPI.Entities.DTOs.Edit;
+using SchoolAPI.Entities.DTOs.View;
+using SchoolAPI.UseCase.StudentUseCases;
 
-namespace WizardAPI.Controllers;
+namespace SchoolAPI.Controllers;
 
 [ApiController]
 public class StudentController(StudentUseCase useCase) : ControllerBase
@@ -24,10 +24,10 @@ public class StudentController(StudentUseCase useCase) : ControllerBase
     }
 
     [HttpGet]
-    [Route("/students/interactive-groups/{interactiveGroupId:int}")]
-    public async Task<ICollection<StudentViewDto>> GetStudentsByInteractiveGroupId(int interactiveGroupId)
+    [Route("/students/groups/{GroupId:int}")]
+    public async Task<ICollection<StudentViewDto>> GetStudentsByGroupId(int GroupId)
     {
-        return await useCase.GetStudentsByInteractiveGroupIdAsync(interactiveGroupId);
+        return await useCase.GetStudentsByGroupIdAsync(GroupId);
     }
     
     [HttpGet]

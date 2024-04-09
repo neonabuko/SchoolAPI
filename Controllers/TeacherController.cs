@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
-using WizardAPI.Entities.DTOs.Create;
-using WizardAPI.Entities.DTOs.Edit;
-using WizardAPI.Entities.DTOs.View;
-using WizardAPI.UseCase.TeacherUseCases;
+using SchoolAPI.Entities.DTOs.Create;
+using SchoolAPI.Entities.DTOs.Edit;
+using SchoolAPI.Entities.DTOs.View;
+using SchoolAPI.UseCase.TeacherUseCases;
 
-namespace WizardAPI.Controllers;
+namespace SchoolAPI.Controllers;
 
 [ApiController]
 public class TeacherController(TeacherUseCase teacherUseCase) : ControllerBase

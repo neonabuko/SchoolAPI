@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace WizardAPI.Entities;
+namespace SchoolAPI.Entities;
 
 public class Teacher
 {
@@ -9,5 +9,5 @@ public class Teacher
     public required string Name { get; set; }
     public DateOnly Birthday { get; set; }
     
-    public ICollection<InteractiveGroup>? InteractiveGroups { get; set; }
+    public ICollection<Group>? Groups { get; set; }
 }

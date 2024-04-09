@@ -1,7 +1,7 @@
-namespace WizardAPI.Entities.DTOs.Edit;
+namespace SchoolAPI.Entities.DTOs.Edit;
 
 public record StudentEditDto(
     string? Name,
     DateOnly? Birthday,
-    int? InteractiveGroupId
+    int? GroupId
     );

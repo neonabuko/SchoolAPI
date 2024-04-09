@@ -1,8 +1,8 @@
-namespace WizardAPI.Entities.DTOs.View;
+namespace SchoolAPI.Entities.DTOs.View;
 
-public record InteractiveClassViewDto(
+public record LessonViewDto(
     string Id,
-    string Lesson,
+    string Name,
     string DateTime,
     string? Oral,
     string? HwDelivered,

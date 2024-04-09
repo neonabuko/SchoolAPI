@@ -1,6 +1,6 @@
-using WizardAPI.Entities.DTOs.View;
+using SchoolAPI.Entities.DTOs.View;
 
-namespace WizardAPI.Entities.Extensions;
+namespace SchoolAPI.Entities.Extensions;
 
 public static class EntityExtensions
 {
@@ -15,30 +15,30 @@ public static class EntityExtensions
             );
     }
 
-    public static InteractiveClassViewDto AsViewDto(this InteractiveClass interactiveClass)
+    public static LessonViewDto AsViewDto(this Lesson Lesson)
     {
-        var formattedDateTime = interactiveClass.DateTime.ToString("dd/MM HH:mm");
+        var formattedDateTime = Lesson.DateTime.ToString("dd/MM HH:mm");
         
-        return new InteractiveClassViewDto(
-            interactiveClass.Id.ToString(),
-            interactiveClass.Lesson,
+        return new LessonViewDto(
+            Lesson.Id.ToString(),
+            Lesson.Name,
             formattedDateTime,
-            interactiveClass.Oral.ToString()?.ToUpper(),
-            interactiveClass.HwDelivered.ToString(),
-            interactiveClass.HwGrade.ToString()?.ToUpper(),
-            interactiveClass.StudentPresent.ToString(),
-            interactiveClass.StudentId.ToString()
+            Lesson.Oral.ToString()?.ToUpper(),
+            Lesson.HwDelivered.ToString(),
+            Lesson.HwGrade.ToString()?.ToUpper(),
+            Lesson.StudentPresent.ToString(),
+            Lesson.StudentId.ToString()
         );
     }
 
-    public static InteractiveGroupViewDto AsViewDto(this InteractiveGroup interactiveGroup)
+    public static GroupViewDto AsViewDto(this Group Group)
     {
-        var formattedDateTime = interactiveGroup.DateTime.ToString("dd/MM HH:mm");
-        return new InteractiveGroupViewDto(
-            interactiveGroup.Id.ToString(),
-            interactiveGroup.Name,
+        var formattedDateTime = Group.DateTime.ToString("dd/MM HH:mm");
+        return new GroupViewDto(
+            Group.Id.ToString(),
+            Group.Name,
             formattedDateTime,
-            interactiveGroup.TeacherId.ToString()
+            Group.TeacherId.ToString()
         );
     }
     
@@ -51,7 +51,7 @@ public static class EntityExtensions
             student.Name,
             formattedBirthday,
             student.RegistrationId.ToString(),
-            student.InteractiveGroupId.ToString()
+            student.GroupId.ToString()
         );
     }
 }
